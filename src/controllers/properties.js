@@ -1,6 +1,5 @@
-
-
-const House = require("../models/schema1");
+const {User,Property} = require("../models/schema1");
+const House=Property;
 const properties=async (req,res)=>{
  try {
     const house = new House(req.body);

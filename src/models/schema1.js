@@ -189,7 +189,8 @@ const userschema=new mongoose.Schema({
     minLength:3,
     maxLength:10,
     required:true,
-    trim:true
+    trim:true,
+    unique:true,
   } ,
   password:{
     type:String,
@@ -206,6 +207,5 @@ const userschema=new mongoose.Schema({
   }
 })
 const User=mongoose.model("User",userschema);
-const User2=mongoose.model("properties",houseSchema);
-module.exports={User,User2};
-
+const Property=mongoose.model("properties",houseSchema);
+module.exports={User,Property};
