@@ -131,7 +131,10 @@ const houseSchema = new mongoose.Schema(
       enum:["sold","notsold"],
       required:true,
     },
-    
+    brokername:{
+      type:String,
+      required:true,
+    } 
   },
   {
     timestamps: true
