@@ -115,11 +115,28 @@ const houseSchema = new mongoose.Schema(
 
     photo_url: {
       type: String
-    }
+    },
+    Owner_name:{
+      type:String,
+      required:true,
+      lowercase:true,
+     trim:true,
+    },
+    Apartment_name:{
+      type:String,
+    },
+    status:{
+      type:String,
+      default:"notsold",
+      enum:["sold","notsold"],
+      required:true,
+    },
+    
   },
   {
     timestamps: true
   }
+  
 );
 
 houseSchema.pre("save", async function () {

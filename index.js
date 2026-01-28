@@ -4,9 +4,9 @@ const app = express();
 const connectDB = require("./src/config/database");
 app.use(express.json());
 
-const addnew=require('./src/routes/properties');
+const connector=require('./src/routes/properties');
 
-app.use("/api/addproperties",addnew);
+app.use("/api/property",connector);
 // this is for adding the details of the properties 
 
 connectDB()
