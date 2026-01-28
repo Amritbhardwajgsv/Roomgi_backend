@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-
+const mongoose = require('mongoose');
 const houseSchema = new mongoose.Schema(
   {
     house_id: {
@@ -184,5 +183,29 @@ houseSchema.pre("save", async function () {
     throw error; 
   }
 });
+const userschema=new mongoose.Schema({
+  username:{
+    type:String,
+    minLength:3,
+    maxLength:10,
+    required:true,
+    trim:true
+  } ,
+  password:{
+    type:String,
+    minLength:7,
+    maxLength:20,
+    required:true
+  } ,
+  emailId:{
+    type:String,
+    required:true,
+    unique:true,
+    lowercase:true,
+    trim:true
+  }
+})
+const User=mongoose.model("User",userschema);
+const User2=mongoose.model("properties",houseSchema);
+module.exports={User,User2};
 
-module.exports=mongoose.model("properties",houseSchema);
