@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+
 const houseSchema = new mongoose.Schema(
   {
     house_id: {
@@ -6,45 +7,14 @@ const houseSchema = new mongoose.Schema(
       unique: true
     },
 
-    city: {
-      type: String,
-      required: true
-    },
-
-    state: {
-      type: String,
-      required: true
-    },
-
-    latitude: {
-      type: Number,
-      required: true
-    },
-
-    longitude: {
-      type: Number,
-      required: true
-    },
-
-    price_inr: {
-      type: Number,
-      required: true
-    },
-
-    size_sqft: {
-      type: Number,
-      required: true
-    },
-
-    bedrooms: {
-      type: Number,
-      required: true
-    },
-
-    bathrooms: {
-      type: Number,
-      required: true
-    },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    latitude: { type: Number, required: true },
+    longitude: { type: Number, required: true },
+    price_inr: { type: Number, required: true },
+    size_sqft: { type: Number, required: true },
+    bedrooms: { type: Number, required: true },
+    bathrooms: { type: Number, required: true },
 
     property_type: {
       type: String,
@@ -59,33 +29,13 @@ const houseSchema = new mongoose.Schema(
       required: true
     },
 
-    nearest_hospital: {
-      type: String
-    },
-
-    hospital_distance_km: {
-      type: Number
-    },
-
-    nearest_railway_station: {
-      type: String
-    },
-
-    railway_distance_km: {
-      type: Number
-    },
-
-    nearest_airport: {
-      type: String
-    },
-
-    airport_distance_km: {
-      type: Number
-    },
-
-    year_built: {
-      type: Number
-    },
+    nearest_hospital: String,
+    hospital_distance_km: Number,
+    nearest_railway_station: String,
+    railway_distance_km: Number,
+    nearest_airport: String,
+    airport_distance_km: Number,
+    year_built: Number,
 
     parking: {
       type: String,
@@ -112,35 +62,37 @@ const houseSchema = new mongoose.Schema(
       enum: ["Fiber", "Broadband", "None"]
     },
 
-    photo_url: {
-      type: String
+    photo_url: String,
+
+    Owner_name: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true
     },
-    Owner_name:{
-      type:String,
-      required:true,
-      lowercase:true,
-     trim:true,
+
+    Apartment_name: String,
+
+    status: {
+      type: String,
+      enum: ["sold", "notsold"],
+      default: "notsold"
     },
-    Apartment_name:{
-      type:String,
+
+    brokername: {
+      type: String,
+      required: true
     },
-    status:{
-      type:String,
-      default:"notsold",
-      enum:["sold","notsold"],
-      required:true,
-    },
-    brokername:{
-      type:String,
-      required:true,
-    } 
-  },
+    ownerId: {
+      type: String,
+      required: true,
+      unique:true
+    }
+  },  
   {
     timestamps: true
   }
-  
 );
-
 houseSchema.pre("save", async function () {
   try {
     if (this.house_id) return;
@@ -204,6 +156,16 @@ const userschema=new mongoose.Schema({
     unique:true,
     lowercase:true,
     trim:true
+  },
+  age:{
+    type:Number,
+    required:true,
+    min:20,
+    max:120
+  },
+  uniqueid:{
+    type:String,
+    unique:true
   }
 })
 const User=mongoose.model("User",userschema);
