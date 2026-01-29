@@ -2,6 +2,7 @@ const { User } = require("../models/schema1");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+const {Property}=require("../models/schema1");
 
 const register = async (req, res) => {
   try {
@@ -104,6 +105,7 @@ const deleteMe = async (req, res) => {
   try {
     const brokerId = req.user.uniqueid;
 
+    await Property.deleteMany({BrokerId:brokerId});
     await User.deleteOne({ uniqueid: brokerId });
     res.clearCookie("token");
 
@@ -117,8 +119,6 @@ const deleteMe = async (req, res) => {
 const Update = async (req, res) => {
   try {
     const brokerId = req.user.uniqueid;
-
-    // ✅ allow only safe fields
     const allowedFields = ["age", "emailId"];
     const updates = {};
 

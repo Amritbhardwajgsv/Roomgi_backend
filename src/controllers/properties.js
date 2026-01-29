@@ -39,7 +39,7 @@ const getdatabyid = async (req, res) => {
 
     const house = await House.findOne({
       house_id,
-      owner_username: req.user.username // 🔐 ownership check
+      owner_username: req.user.username // 
     });
 
     if (!house) {
@@ -87,20 +87,48 @@ const getdatabyname = async (req, res) => {
   }
 };
 
-/* ================= UPDATE PROPERTY ================= */
 const updatedetails = async (req, res) => {
   try {
-    const data=req.body;
-    
-  }
-   catch (error) {
+    const { house_id, ...updateData } = req.body;
+
+    if (!house_id) {
+      return res.status(400).json({
+        message: "house_id is required"
+      });
+    }
+
+    const updatedProperty = await Property.findOneAndUpdate(
+      {
+        house_id: house_id,
+        BrokerId: req.user.uniqueid   
+      },
+      {
+        $set: updateData
+      },
+      {
+        new: true,       
+        runValidators: true
+      }
+    );
+
+    if (!updatedProperty) {
+      return res.status(404).json({
+        message: "Property not found or unauthorized"
+      });
+    }
+
+    res.status(200).json({
+      message: "Property updated successfully",
+      data: updatedProperty
+    });
+
+  } catch (error) {
     res.status(500).json({
       error: error.message
     });
   }
 };
 
-/* ================= DELETE PROPERTY ================= */
 const deletebyid = async (req, res) => {
   try {
     const { house_id } = req.body;
@@ -111,9 +139,9 @@ const deletebyid = async (req, res) => {
       });
     }
 
-    const deletedHouse = await House.findOneAndDelete({
+    const deletedHouse = await Property.findOneAndDelete({
       house_id,
-      owner_username: req.user.username // 🔐 owner check
+      BrokerId: req.user.uniqueid   
     });
 
     if (!deletedHouse) {
@@ -126,12 +154,15 @@ const deletebyid = async (req, res) => {
       message: "property deleted successfully",
       data: deletedHouse
     });
+
   } catch (error) {
     res.status(500).json({
       message: error.message
     });
   }
 };
+
+   
 
 module.exports = {
   properties,
