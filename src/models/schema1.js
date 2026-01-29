@@ -83,10 +83,9 @@ const houseSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    ownerId: {
+    BrokerId: {
       type: String,
-      required: true,
-      unique:true
+      required: true
     }
   },  
   {

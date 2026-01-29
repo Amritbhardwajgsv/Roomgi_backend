@@ -3,9 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
-
 const register = async (req, res) => {
-    console.log("REGISTER BODY:", req.body);
   try {
     const { username, emailId, password, age } = req.body;
 
@@ -25,16 +23,19 @@ const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+
+    const brokerId = crypto.randomUUID();
+
     await User.create({
       username,
       emailId,
       password: hashedPassword,
       age,
-      uniqueid: crypto.randomUUID()
+      uniqueid: brokerId
     });
 
     const token = jwt.sign(
-      { username, emailId },
+      { username, uniqueid: brokerId },
       process.env.SECRETKEY,
       { expiresIn: "30m" }
     );
@@ -50,6 +51,7 @@ const register = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 const login = async (req, res) => {
   try {
@@ -70,7 +72,7 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { username: user.username, emailId: user.emailId },
+      { username: user.username, uniqueid: user.uniqueid },
       process.env.SECRETKEY,
       { expiresIn: "30m" }
     );
@@ -87,6 +89,7 @@ const login = async (req, res) => {
   }
 };
 
+
 const logout = (req, res) => {
   try {
     res.clearCookie("token");
@@ -95,37 +98,53 @@ const logout = (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
 const deleteMe = async (req, res) => {
   try {
-    const username = req.user.username; 
+    const brokerId = req.user.uniqueid;
 
-    await User.deleteOne({ username });
+    await User.deleteOne({ uniqueid: brokerId });
     res.clearCookie("token");
+
     res.status(200).json({ message: "User deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-const Update=async(req,res)=>{
-  try{
-    const updates=req.body;
-    const username=req.user.username;
-    const user = await User.findOne({ username });
+
+
+const Update = async (req, res) => {
+  try {
+    const brokerId = req.user.uniqueid;
+
+    // ✅ allow only safe fields
+    const allowedFields = ["age", "emailId"];
+    const updates = {};
+
+    for (let key of allowedFields) {
+      if (req.body[key] !== undefined) {
+        updates[key] = req.body[key];
+      }
+    }
+
+    const user = await User.findOneAndUpdate(
+      { uniqueid: brokerId },
+      { $set: updates },
+      { new: true, runValidators: true }
+    );
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    Object.assign(user, updates); 
-    await user.save(); 
-
-      res.status(200).json({
+    res.status(200).json({
       message: "User updated successfully",
       user
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-)}
-  catch(err){
-    res.status(500).json({error:err.message});
-  }
-}
+};
 
-module.exports = { register, login, logout,deleteMe,Update };
+module.exports = {register, login, logout, deleteMe,Update};
