@@ -139,7 +139,7 @@ const userschema=new mongoose.Schema({
   username:{
     type:String,
     minLength:3,
-    maxLength:10,
+    maxLength:20,
     required:true,
     trim:true,
     unique:true,
@@ -147,7 +147,6 @@ const userschema=new mongoose.Schema({
   password:{
     type:String,
     minLength:7,
-    maxLength:20,
     required:true
   } ,
   emailId:{
