@@ -50,7 +50,7 @@ const getdatabyname = async (req, res) => {
     const data = await House.find({
       Owner_name: { $regex: ownerName, $options: "i" }
     })
-    .select("price_inr city state photo_url");
+    .select("price_inr city state photo_url size_sqft house_id");
 
     res.status(200).json({
       success: true,
