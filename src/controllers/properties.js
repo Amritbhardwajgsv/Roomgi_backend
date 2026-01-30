@@ -261,11 +261,29 @@ const sortMyPropertiesBySize = async (req, res) => {
   }
 };
 
+const getPropertiesSortedByTime = async (req, res) => {
+  try {
+    const brokerId = req.user.id; 
 
+    const properties = await Property.find({ brokerId })
+      .sort({ createdAt: -1 }); 
+
+    res.status(200).json({
+      success: true,
+      count: properties.length,
+      data: properties
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 module.exports = {
   properties,
   getdatabyid,
   getdatabyname,
   updatedetails,
-  deletebyid,getdatabybrokername,sortByPriceLowToHigh,sortByLocation,sortMyPropertiesBySize 
+  deletebyid,getdatabybrokername,sortByPriceLowToHigh,sortByLocation,sortMyPropertiesBySize ,getPropertiesSortedByTime
 };

@@ -1,28 +1,33 @@
 require("dotenv").config();
 
 const express = require("express");
-const cors=require("cors");
-const cookieParser=require("cookie-parser");
-const connector=require('./src/routes/properties');
-const userRoutes=require("./src/routes/user");
-const propertyRoutes=require("./src/routes/properties");
-const connectDB=require("./src/config/database");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+
+const connectDB = require("./src/config/database");
+
+// routes
+const userRoutes = require("./src/routes/user");
+const propertyRoutes = require("./src/routes/properties");
+const houseRoutes = require("./src/routes/house.routes");
+
 const app = express();
 
+
 app.use(express.json());
+
 app.use(cors({
-  origin: "http://localhost:1234", // Parcel frontend
+  origin: "http://localhost:1234",
   credentials: true
 }));
-
-
 
 app.use(cookieParser());
 
 app.use("/api/user", userRoutes);
 app.use("/api/property", propertyRoutes);
+app.use("/api/houses", houseRoutes);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ;
 
 (async () => {
   try {
@@ -34,6 +39,6 @@ const PORT = process.env.PORT || 3000;
     });
   } catch (err) {
     console.error("DB connection failed:", err.message);
-    process.exit(1); 
+    process.exit(1);
   }
 })();
