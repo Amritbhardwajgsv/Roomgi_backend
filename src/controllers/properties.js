@@ -1,42 +1,65 @@
+const { User, Property } = require("../models/schema1");
+// const House = Property;
 
-
-const House = require("../models/schema1");
-const properties=async (req,res)=>{
- try {
-    const house = new House(req.body);
+const properties = async (req, res) => {
+  try {
+    console.log(req.body);
+    const house = new Property({
+      ...req.body,                 // property data from client
+      BrokerId: req.user.uniqueid,
+      brokername :req.user.username
+    });
+    console.log(house);
     await house.save();
 
     res.status(201).json({
-      message: "details updated successfully",
+      message: "Property added successfully",
       data: house
     });
-  } catch (error) {
-    console.error(error);
+
+  } 
+  catch (error) {
     res.status(500).json({
       error: error.message
     });
   }
-}
-const getdatabyid=async (req,res)=>{
-    try{
-    const id=req.params.id;
-    const house =await House.findOne({house_id:id});
-    if(!house){
-        return res.status(404).json({
-            message:"property not found"
-        });
+};
+
+
+/* ================= GET PROPERTY BY HOUSE_ID (BODY) ================= */
+const getdatabyid = async (req, res) => {
+  try {
+    const { house_id } = req.body;
+
+    if (!house_id) {
+      return res.status(400).json({
+        message: "house_id is required"
+      });
     }
+
+    const house = await House.findOne({
+      house_id,
+      owner_username: req.user.username // 
+    });
+
+    if (!house) {
+      return res.status(404).json({
+        message: "property not found"
+      });
+    }
+
     res.status(200).json(house);
-    }
-    catch (error){
-        res.status(500).json({
-            error:error.message
-        });
-    }
-}
+  } catch (error) {
+    res.status(500).json({
+      error: error.message
+    });
+  }
+};
+
+/* ================= GET PROPERTY BY OWNER NAME ================= */
 const getdatabyname = async (req, res) => {
   try {
-    let ownerName = req.query.ownername;
+    let ownerName = req.body.brokername;
 
     if (!ownerName) {
       return res.status(400).json({
@@ -57,6 +80,32 @@ const getdatabyname = async (req, res) => {
       count: data.length,
       data
     });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+/// get data by logged in broker name 
+/* ================= GET MY PROPERTIES ================= */
+const getdatabybrokername = async (req, res) => {
+  try {
+
+    // ✅ get logged-in broker name from JWT
+    const brokername = req.user.username;
+
+    const data = await Property.find({
+      brokername: brokername
+    }).select(
+      "price_inr city state photo_url size_sqft house_id"
+    );
+
+    res.status(200).json({
+      success: true,
+      count: data.length,
+      data
+    });
 
   } catch (error) {
     res.status(500).json({
@@ -64,7 +113,13 @@ const getdatabyname = async (req, res) => {
       message: error.message
     });
   }
-};  
+};
+
+
+
+
+
+
 const updatedetails = async (req, res) => {
   try {
     const { house_id, ...updateData } = req.body;
@@ -75,24 +130,29 @@ const updatedetails = async (req, res) => {
       });
     }
 
-    const updatedHouse = await House.findOneAndUpdate(
-      { house_id: house_id },
-      { $set: updateData },
+    const updatedProperty = await Property.findOneAndUpdate(
       {
-        new: true,
+        house_id: house_id,
+        BrokerId: req.user.uniqueid   
+      },
+      {
+        $set: updateData
+      },
+      {
+        new: true,       
         runValidators: true
       }
     );
 
-    if (!updatedHouse) {
+    if (!updatedProperty) {
       return res.status(404).json({
-        message: "property not found"
+        message: "Property not found or unauthorized"
       });
     }
 
     res.status(200).json({
-      message: "property updated successfully",
-      data: updatedHouse
+      message: "Property updated successfully",
+      data: updatedProperty
     });
 
   } catch (error) {
@@ -101,41 +161,46 @@ const updatedetails = async (req, res) => {
     });
   }
 };
+
 const deletebyid = async (req, res) => {
   try {
     const { house_id } = req.params;
 
     if (!house_id) {
       return res.status(400).json({
-        success: false,
         message: "house_id is required"
       });
     }
 
-    const deletedHouse = await House.findOneAndDelete({
-      house_id: house_id
+    const deletedHouse = await Property.findOneAndDelete({
+      house_id,
+      BrokerId: req.user.uniqueid   
     });
 
     if (!deletedHouse) {
       return res.status(404).json({
-        success: false,
-        message: "property not found"
+        message: "property not found or unauthorized"
       });
     }
 
     res.status(200).json({
-      success: true,
       message: "property deleted successfully",
       data: deletedHouse
     });
 
   } catch (error) {
     res.status(500).json({
-      success: false,
       message: error.message
     });
   }
 };
 
-// some fields that cant be changed or updated are price_inr house id 
-module.exports={properties,getdatabyid,getdatabyname,updatedetails,deletebyid};
+   
+
+module.exports = {
+  properties,
+  getdatabyid,
+  getdatabyname,
+  updatedetails,
+  deletebyid,getdatabybrokername
+};

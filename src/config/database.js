@@ -1,8 +1,13 @@
-const mongoose=require('mongoose');
-require('dotenv').config();
-async function main(){
-    const dbstring=process.env.database_url;
-    await mongoose.connect(dbstring);
+const mongoose = require("mongoose");
 
-}
-module.exports=main;
+const connectDB = async () => {
+  const dbstring = process.env.DATABASE_URL;
+
+  if (!dbstring) {
+    throw new Error("Database connection string missing");
+  }
+
+  await mongoose.connect(dbstring);
+};
+
+module.exports = connectDB;
