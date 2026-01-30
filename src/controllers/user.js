@@ -1,14 +1,40 @@
-const { User } = require("../models/schema1");
+const { User, Property } = require("../models/schema1");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const {Property}=require("../models/schema1");
+const axios = require("axios");
+
+//geocode
+const getLatLongFromLocation = async (location) => {
+  const url = "https://nominatim.openstreetmap.org/search";
+
+  const response = await axios.get(url, {
+    params: {
+      q: location,
+      format: "json",
+      limit: 1
+    },
+    headers: {
+      "User-Agent": "your-app-name"
+    }
+  });
+
+  if (!response.data || response.data.length === 0) {
+    throw new Error("Invalid location");
+  }
+
+  return {
+    latitude: parseFloat(response.data[0].lat),
+    longitude: parseFloat(response.data[0].lon)
+  };
+};
+
 
 const register = async (req, res) => {
   try {
-    const { username, emailId, password, age } = req.body;
+    const { username, emailId, password, age, location } = req.body;
 
-    if (!username || !emailId || !password || !age) {
+    if (!username || !emailId || !password || !age || !location) {
       return res.status(400).json({ message: "Fields missing" });
     }
 
@@ -23,16 +49,27 @@ const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
-
     const brokerId = crypto.randomUUID();
+
+    // 🌍 Geocode once at registration
+    let coords;
+    try {
+      coords = await getLatLongFromLocation(location);
+    } catch {
+      return res.status(400).json({ message: "Invalid location" });
+    }
 
     await User.create({
       username,
       emailId,
       password: hashedPassword,
       age,
-      uniqueid: brokerId
+      uniqueid: brokerId,
+      locationText: location,
+      location: {
+        type: "Point",
+        coordinates: [coords.longitude, coords.latitude]
+      }
     });
 
     const token = jwt.sign(
@@ -43,16 +80,16 @@ const register = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
+      secure: false, // true in production
       sameSite: "lax"
     });
 
     res.status(201).json({ message: "User registered successfully" });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 const login = async (req, res) => {
   try {
@@ -73,7 +110,9 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { username: user.username, uniqueid: user.uniqueid },
+      { username: user.username, uniqueid: user.uniqueid
+        // ,location:user.location
+      },
       process.env.SECRETKEY,
       { expiresIn: "30m" }
     );
@@ -146,5 +185,4 @@ const Update = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
 module.exports = {register, login, logout, deleteMe,Update};

@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const houseSchema = new mongoose.Schema(
   {
     house_id: {
@@ -9,8 +8,24 @@ const houseSchema = new mongoose.Schema(
 
     city: { type: String, required: true },
     state: { type: String, required: true },
+
+    // Optional: keep for display/debug
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
+
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+        required: true
+      },
+      coordinates: {
+        type: [Number],
+        required: true
+      }
+    },
+
     price_inr: { type: Number, required: true },
     size_sqft: { type: Number, required: true },
     bedrooms: { type: Number, required: true },
@@ -35,6 +50,7 @@ const houseSchema = new mongoose.Schema(
     railway_distance_km: Number,
     nearest_airport: String,
     airport_distance_km: Number,
+
     year_built: Number,
 
     parking: {
@@ -83,89 +99,79 @@ const houseSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+
     BrokerId: {
       type: String,
       required: true
     }
-  },  
-  {
-    timestamps: true
-  }
+  },
+  { timestamps: true }
 );
-houseSchema.pre("save", async function () {
-  try {
-    if (this.house_id) return;
-
-    const properties = mongoose.model("properties");
-    const cursor = properties.find().cursor();
-
-    let previd = "";
-
-    for await (const house of cursor) {
-      if (!house.createdAt) continue;
-
-      const creat = house.createdAt.getTime();
-
-      if (previd === "") {
-        const initialnumber = 1;
-
-        previd =
-          String(creat) +
-          String(initialnumber).padStart(4, "0");
-      } else {
-        const last4 = parseInt(previd.slice(-4));
-        const next_id = last4 + 1;
-
-        previd =
-          String(creat) +
-          String(next_id).padStart(4, "0");
-      }
-    }
-
- 
-    if (previd === "") {
-      const creat = Date.now();
-      previd = String(creat) + "0001";
-    }
-
-    this.house_id = `H${previd}`;
-  } catch (error) {
-    console.error("house_id generation failed:", error);
-    throw error; 
+houseSchema.pre("save", function (next) {
+  if (!this.house_id) {
+    this.house_id = `H${Date.now()}${Math.floor(Math.random() * 1000)}`;
   }
 });
-const userschema=new mongoose.Schema({
-  username:{
-    type:String,
-    minLength:3,
-    maxLength:20,
-    required:true,
-    trim:true,
-    unique:true,
-  } ,
-  password:{
-    type:String,
-    minLength:7,
-    required:true
-  } ,
-  emailId:{
-    type:String,
-    required:true,
-    unique:true,
-    lowercase:true,
-    trim:true
+houseSchema.index({ location: "2dsphere" });
+const userschema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      minLength: 3,
+      maxLength: 20,
+      required: true,
+      trim: true,
+      unique: true
+    },
+
+    password: {
+      type: String,
+      minLength: 7,
+      required: true
+    },
+
+    emailId: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true
+    },
+
+    age: {
+      type: Number,
+      required: true,
+      min: 20,
+      max: 120
+    },
+
+    uniqueid: {
+      type: String,
+      unique: true
+    },
+
+    locationText: {
+      type: String,
+      required: true
+    },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+        required: true
+      },
+      coordinates: {
+        type: [Number],
+        required: true
+      }
+    }
   },
-  age:{
-    type:Number,
-    required:true,
-    min:20,
-    max:120
-  },
-  uniqueid:{
-    type:String,
-    unique:true
-  }
-})
-const User=mongoose.model("User",userschema);
-const Property=mongoose.model("properties",houseSchema);
-module.exports={User,Property};
+  { timestamps: true }
+);
+
+userschema.index({ location: "2dsphere" });
+const User = mongoose.model("User", userschema);
+const Property = mongoose.model("properties", houseSchema);
+
+module.exports = { User, Property };

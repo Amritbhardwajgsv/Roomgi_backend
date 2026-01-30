@@ -8,7 +8,8 @@ const {
   getdatabyid,
   getdatabyname,
   updatedetails,
-  deletebyid,getdatabybrokername
+  deletebyid,getdatabybrokername,
+  sortByPriceLowToHigh,sortByLocation,sortMyPropertiesBySize
 } = require("../controllers/properties");
 
 /* ================= CREATE PROPERTY ================= */
@@ -26,8 +27,9 @@ router.patch("/update", auth, updatedetails);
 /* ================= DELETE PROPERTY ================= */
 router.delete("/delete/:house_id", auth, deletebyid);
 
-/// new one 
 
 router.get("/getbybrokername", auth, getdatabybrokername);
-
+router.get("/sort-by-price",auth,sortByPriceLowToHigh);
+router.get("/nearestproperties",auth,sortByLocation);
+router.get("/sortbysize", auth, sortMyPropertiesBySize); // hight to low
 module.exports = router;
