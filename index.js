@@ -10,7 +10,7 @@ const connectDB = require("./src/config/database");
 const userRoutes = require("./src/routes/user");
 const propertyRoutes = require("./src/routes/properties");
 const houseRoutes = require("./src/routes/house.routes");
-
+const filterRoutes=require("./src/routes/filter");
 const app = express();
 
 
@@ -26,6 +26,7 @@ app.use(cookieParser());
 app.use("/api/user", userRoutes);
 app.use("/api/property", propertyRoutes);
 app.use("/api/houses", houseRoutes);
+app.use("/api/filter",filterRoutes);;
 
 const PORT = process.env.PORT ;
 

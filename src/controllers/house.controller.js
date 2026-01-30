@@ -11,12 +11,11 @@ const {
 
 const getFilteredHouses = async (req, res) => {
   try {
-    // 🔒 STEP 1: START with broker filter (MANDATORY)
+    
     const filters = {
-      BrokerId: req.user.uniqueid   // ONLY this broker’s data
+      BrokerId: req.user.uniqueid   
     };
 
-    // 🔽 STEP 2: ADD optional filters
     const {
       property_type,
       parking,
@@ -60,7 +59,6 @@ const getFilteredHouses = async (req, res) => {
       }
     }
 
-    // 🔍 STEP 3: QUERY
     const houses = await Property
       .find(filters)
       .sort({ createdAt: -1 });

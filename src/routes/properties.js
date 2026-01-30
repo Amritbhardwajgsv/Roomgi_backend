@@ -12,25 +12,16 @@ const {
   sortByPriceLowToHigh,sortByLocation,sortMyPropertiesBySize,getPropertiesSortedByTime
 } = require("../controllers/properties");
 
-/* ================= CREATE PROPERTY ================= */
 router.post("/", auth, properties);
 
-/* ================= GET PROPERTY BY ID (BODY) ================= */
 router.post("/getbyid", auth, getdatabyid);
 
-/* ================= GET PROPERTY BY OWNER NAME ================= */
 router.post("/getbyname", auth, getdatabyname);
 
-/* ================= UPDATE PROPERTY ================= */
 router.patch("/update", auth, updatedetails);
 
-/* ================= DELETE PROPERTY ================= */
 router.delete("/delete/:house_id", auth, deletebyid);
 
 
 router.get("/getbybrokername", auth, getdatabybrokername);
-router.get("/sort-by-price",auth,sortByPriceLowToHigh);
-router.get("/nearestproperties",auth,sortByLocation);
-router.get("/sortbysize", auth, sortMyPropertiesBySize); // high to low
-router.get("/sortbytime",auth,getPropertiesSortedByTime);
 module.exports = router;
