@@ -51,7 +51,7 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const brokerId = crypto.randomUUID();
 
-    // 🌍 Geocode once at registration
+    // Geocode once at registration
     let coords;
     try {
       coords = await getLatLongFromLocation(location);
@@ -65,8 +65,8 @@ const register = async (req, res) => {
       password: hashedPassword,
       age,
       uniqueid: brokerId,
-      locationText: location,
-      location: {
+      location: location,
+      locationcoordinates: {
         type: "Point",
         coordinates: [coords.longitude, coords.latitude]
       }

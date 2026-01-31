@@ -150,11 +150,11 @@ const userschema = new mongoose.Schema(
       unique: true
     },
 
-    locationText: {
+    location: {
       type: String,
       required: true
     },
-    location: {
+    locationcoordinates: {
       type: {
         type: String,
         enum: ["Point"],
@@ -170,7 +170,7 @@ const userschema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userschema.index({ location: "2dsphere" });
+userschema.index({ locationcoordinates: "2dsphere" });
 const User = mongoose.model("User", userschema);
 const Property = mongoose.model("properties", houseSchema);
 
