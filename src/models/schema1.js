@@ -1,118 +1,7 @@
 const mongoose = require("mongoose");
-const houseSchema = new mongoose.Schema(
-  {
-    house_id: {
-      type: String,
-      unique: true
-    },
 
-    city: { type: String, required: true },
-    state: { type: String, required: true },
+/* ================= USER SCHEMA ================= */
 
-    // Optional: keep for display/debug
-    latitude: { type: Number, required: true },
-    longitude: { type: Number, required: true },
-
-    location: {
-      type: {
-        type: String,
-        enum: ["Point"],
-        default: "Point",
-        required: true
-      },
-      coordinates: {
-        type: [Number],
-        required: true
-      }
-    },
-
-    price_inr: { type: Number, required: true },
-    size_sqft: { type: Number, required: true },
-    bedrooms: { type: Number, required: true },
-    bathrooms: { type: Number, required: true },
-
-    property_type: {
-      type: String,
-      enum: [
-        "Apartment",
-        "Flat",
-        "Villa",
-        "Independent House",
-        "PG",
-        "Hostel"
-      ],
-      required: true
-    },
-
-    nearest_hospital: String,
-    hospital_distance_km: Number,
-    nearest_railway_station: String,
-    railway_distance_km: Number,
-    nearest_airport: String,
-    airport_distance_km: Number,
-
-    year_built: Number,
-
-    parking: {
-      type: String,
-      enum: ["Basement", "Open", "Covered", "None"]
-    },
-
-    furnishing: {
-      type: String,
-      enum: ["Unfurnished", "Semi-Furnished", "Fully-Furnished"]
-    },
-
-    water_supply: {
-      type: String,
-      enum: ["Municipal", "Borewell", "Both"]
-    },
-
-    power_backup: {
-      type: Boolean,
-      default: false
-    },
-
-    internet: {
-      type: String,
-      enum: ["Fiber", "Broadband", "None"]
-    },
-
-    photo_url: String,
-
-    Owner_name: {
-      type: String,
-      required: true,
-      lowercase: true,
-      trim: true
-    },
-
-    Apartment_name: String,
-
-    status: {
-      type: String,
-      enum: ["sold", "notsold"],
-      default: "notsold"
-    },
-
-    brokername: {
-      type: String,
-      required: true
-    },
-
-    BrokerId: {
-      type: String,
-      required: true
-    }
-  },
-  { timestamps: true }
-);
-houseSchema.pre("save", function (next) {
-  if (!this.house_id) {
-    this.house_id = `H${Date.now()}${Math.floor(Math.random() * 1000)}`;
-  }
-});
-houseSchema.index({ location: "2dsphere" });
 const userschema = new mongoose.Schema(
   {
     username: {
@@ -154,6 +43,7 @@ const userschema = new mongoose.Schema(
       type: String,
       required: true
     },
+
     locationcoordinates: {
       type: {
         type: String,
@@ -171,7 +61,90 @@ const userschema = new mongoose.Schema(
 );
 
 userschema.index({ locationcoordinates: "2dsphere" });
+
 const User = mongoose.model("User", userschema);
+
+/* ================= PROPERTY SCHEMA ================= */
+
+const houseSchema = new mongoose.Schema(
+  {
+    house_id: {
+      type: String,
+      unique: true
+    },
+
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+
+    latitude: { type: Number, required: true },
+    longitude: { type: Number, required: true },
+
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+        required: true
+      },
+      coordinates: {
+        type: [Number],
+        required: true
+      }
+    },
+
+    price_inr: { type: Number, required: true },
+    size_sqft: { type: Number, required: true },
+    bedrooms: { type: Number, required: true },
+    bathrooms: { type: Number, required: true },
+
+    property_type: {
+      type: String,
+      enum: [
+        "Apartment",
+        "Flat",
+        "Villa",
+        "Independent House",
+        "PG",
+        "Hostel"
+      ],
+      required: true
+    },
+
+    Owner_name: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true
+    },
+
+    status: {
+      type: String,
+      enum: ["sold", "notsold"],
+      default: "notsold"
+    },
+
+    brokername: {
+      type: String,
+      required: true
+    },
+
+    BrokerId: {
+      type: String,
+      required: true
+    }
+  },
+  { timestamps: true }
+);
+
+houseSchema.pre("save", function (next) {
+  if (!this.house_id) {
+    this.house_id = `H${Date.now()}${Math.floor(Math.random() * 1000)}`;
+  }
+  next();
+});
+
+houseSchema.index({ location: "2dsphere" });
+
 const Property = mongoose.model("properties", houseSchema);
 
 module.exports = { User, Property };
