@@ -207,6 +207,6 @@ const Update = async (req, res) => {
 
 };
 
-module.exports = { Update };
 
-module.exports = {register, login, logout, deleteMe};
+
+module.exports = {register, login, logout, deleteMe,Update};
