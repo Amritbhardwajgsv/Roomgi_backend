@@ -18,19 +18,25 @@ const sortByPriceLowToHigh = async (req, res) => {
 const sortByLocation = async (req, res) => {
   try {
     const brokerId = req.user.uniqueid;
+
     const user = await User.findOne({ uniqueid: brokerId });
 
-    if (!user || !user.location || !user.location.coordinates) {
+    if (
+      !user ||
+      !user.locationcoordinates ||
+      !user.locationcoordinates.coordinates
+    ) {
       return res.status(400).json({
         message: "User location not found"
       });
     }
 
-    const [longitude, latitude] = user.location.coordinates;
+    const [longitude, latitude] =
+      user.locationcoordinates.coordinates;
 
     const properties = await Property.find({
-      BrokerId: { $ne: brokerId },   
-      location: {
+      BrokerId: { $ne: brokerId },
+      locationcoordinates: {
         $near: {
           $geometry: {
             type: "Point",
@@ -43,11 +49,13 @@ const sortByLocation = async (req, res) => {
     res.status(200).json({
       properties
     });
-
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: err.message
+    });
   }
 };
+
 
 const sortMyPropertiesBySize = async (req, res) => {
   try {
