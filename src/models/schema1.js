@@ -1,4 +1,71 @@
 const mongoose = require("mongoose");
+
+/* ================= USER SCHEMA ================= */
+
+const userschema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      minLength: 3,
+      maxLength: 20,
+      required: true,
+      trim: true,
+      unique: true
+    },
+
+    password: {
+      type: String,
+      minLength: 7,
+      required: true
+    },
+
+    emailId: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true
+    },
+
+    age: {
+      type: Number,
+      required: true,
+      min: 20,
+      max: 120
+    },
+
+    uniqueid: {
+      type: String,
+      unique: true
+    },
+
+    location: {
+      type: String,
+      required: true
+    },
+
+    locationcoordinates: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+        required: true
+      },
+      coordinates: {
+        type: [Number],
+        required: true
+      }
+    }
+  },
+  { timestamps: true }
+);
+
+userschema.index({ locationcoordinates: "2dsphere" });
+
+const User = mongoose.model("User", userschema);
+
+/* ================= PROPERTY SCHEMA ================= */
+
 const houseSchema = new mongoose.Schema(
   {
     house_id: {
@@ -9,7 +76,6 @@ const houseSchema = new mongoose.Schema(
     city: { type: String, required: true },
     state: { type: String, required: true },
 
-    // Optional: keep for display/debug
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
 
@@ -44,50 +110,12 @@ const houseSchema = new mongoose.Schema(
       required: true
     },
 
-    nearest_hospital: String,
-    hospital_distance_km: Number,
-    nearest_railway_station: String,
-    railway_distance_km: Number,
-    nearest_airport: String,
-    airport_distance_km: Number,
-
-    year_built: Number,
-
-    parking: {
-      type: String,
-      enum: ["Basement", "Open", "Covered", "None"]
-    },
-
-    furnishing: {
-      type: String,
-      enum: ["Unfurnished", "Semi-Furnished", "Fully-Furnished"]
-    },
-
-    water_supply: {
-      type: String,
-      enum: ["Municipal", "Borewell", "Both"]
-    },
-
-    power_backup: {
-      type: Boolean,
-      default: false
-    },
-
-    internet: {
-      type: String,
-      enum: ["Fiber", "Broadband", "None"]
-    },
-
-    photo_url: String,
-
     Owner_name: {
       type: String,
       required: true,
       lowercase: true,
       trim: true
     },
-
-    Apartment_name: String,
 
     status: {
       type: String,
@@ -107,11 +135,14 @@ const houseSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
 houseSchema.pre("save", function (next) {
   if (!this.house_id) {
     this.house_id = `H${Date.now()}${Math.floor(Math.random() * 1000)}`;
   }
+  next();
 });
+
 houseSchema.index({ location: "2dsphere" });
 const userschema = new mongoose.Schema(
   {

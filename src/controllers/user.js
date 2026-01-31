@@ -158,13 +158,28 @@ const deleteMe = async (req, res) => {
 const Update = async (req, res) => {
   try {
     const brokerId = req.user.uniqueid;
-    const allowedFields = ["age", "emailId"];
+    const allowedFields = [
+      "password",
+      "emailId",
+      "age",
+      "location"
+    ];
+
     const updates = {};
 
     for (let key of allowedFields) {
       if (req.body[key] !== undefined) {
         updates[key] = req.body[key];
       }
+    }
+    if (updates.password) {
+      const salt = await bcrypt.genSalt(10);
+      updates.password = await bcrypt.hash(updates.password, salt);
+    }
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        message: "No valid fields provided for update"
+      });
     }
 
     const user = await User.findOneAndUpdate(
@@ -177,12 +192,23 @@ const Update = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    user.password = undefined;
+
     res.status(200).json({
       message: "User updated successfully",
       user
     });
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({
+        message: "Email already exists"
+      });
+    }
+
     res.status(500).json({ error: err.message });
   }
 };
+
+
+
 module.exports = {register, login, logout, deleteMe,Update};
