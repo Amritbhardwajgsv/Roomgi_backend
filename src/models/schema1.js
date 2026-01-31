@@ -144,65 +144,7 @@ houseSchema.pre("save", function (next) {
 });
 
 houseSchema.index({ location: "2dsphere" });
-const userschema = new mongoose.Schema(
-  {
-    username: {
-      type: String,
-      minLength: 3,
-      maxLength: 20,
-      required: true,
-      trim: true,
-      unique: true
-    },
 
-    password: {
-      type: String,
-      minLength: 7,
-      required: true
-    },
-
-    emailId: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true
-    },
-
-    age: {
-      type: Number,
-      required: true,
-      min: 20,
-      max: 120
-    },
-
-    uniqueid: {
-      type: String,
-      unique: true
-    },
-
-    location: {
-      type: String,
-      required: true
-    },
-    locationcoordinates: {
-      type: {
-        type: String,
-        enum: ["Point"],
-        default: "Point",
-        required: true
-      },
-      coordinates: {
-        type: [Number],
-        required: true
-      }
-    }
-  },
-  { timestamps: true }
-);
-
-userschema.index({ locationcoordinates: "2dsphere" });
-const User = mongoose.model("User", userschema);
 const Property = mongoose.model("properties", houseSchema);
 
 module.exports = { User, Property };
