@@ -209,4 +209,4 @@ const Update = async (req, res) => {
 
 module.exports = { Update };
 
-module.exports = {register, login, logout, deleteMe,Update};
+module.exports = {register, login, logout, deleteMe};
