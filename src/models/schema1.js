@@ -44,7 +44,7 @@ const userschema = new mongoose.Schema(
       required: true
     },
     image_url :{
-      type:string
+      type:String
     },
     locationcoordinates: {
       type: {
