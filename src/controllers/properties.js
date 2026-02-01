@@ -28,7 +28,7 @@ const properties = async (req, res) => {
 
 const getdatabyid = async (req, res) => {
   try {
-    const { house_id } = req.body;
+    const { house_id } = req.params;
 
     if (!house_id) {
       return res.status(400).json({
@@ -36,9 +36,9 @@ const getdatabyid = async (req, res) => {
       });
     }
 
-    const house = await House.findOne({
+    const house = await Property.findOne({
       house_id,
-      owner_username: req.user.username // 
+      BrokerId: req.user.uniqueid   // only broker's own property
     });
 
     if (!house) {
@@ -48,12 +48,14 @@ const getdatabyid = async (req, res) => {
     }
 
     res.status(200).json(house);
+
   } catch (error) {
     res.status(500).json({
       error: error.message
     });
   }
 };
+
 
 
 const getdatabyname = async (req, res) => {
