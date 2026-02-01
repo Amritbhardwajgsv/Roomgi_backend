@@ -133,10 +133,18 @@ const login = async (req, res) => {
 
 const logout = (req, res) => {
   try {
-    res.clearCookie("token");
-    res.status(200).json({ message: "Logged out successfully" });
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/"
+    });
+
+    return res.status(200).json({
+      message: "Logged out successfully"
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
 
