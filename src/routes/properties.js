@@ -9,11 +9,7 @@ const {
   getdatabyname,
   updatedetails,
   deletebyid,
-  getdatabybrokername,
-  sortByPriceLowToHigh,
-  sortByLocation,
-  sortMyPropertiesBySize,
-  getPropertiesSortedByTime
+  getdatabybrokername
 } = require("../controllers/properties");
 
 router.post("/", auth, properties);
