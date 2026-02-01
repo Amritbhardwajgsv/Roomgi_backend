@@ -136,7 +136,7 @@ const houseSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-houseSchema.pre("save", function () {
+houseSchema.pre("save", function (next) {
   if (!this.house_id) {
     this.house_id = `H${Date.now()}${Math.floor(Math.random() * 1000)}`;
   }
