@@ -43,7 +43,9 @@ const userschema = new mongoose.Schema(
       type: String,
       required: true
     },
-
+    image_url :{
+      type:string
+    },
     locationcoordinates: {
       type: {
         type: String,
@@ -127,7 +129,9 @@ const houseSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-
+  image_url:{
+    type:String
+  },
     BrokerId: {
       type: String,
       required: true
