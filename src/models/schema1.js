@@ -132,6 +132,28 @@ const houseSchema = new mongoose.Schema(
   image_url:{
     type:String
   },
+    parking: {
+  type: String,
+  enum: ["Basement", "Open", "Covered", "None"],
+  default: "None",
+},
+furnishing: {
+  type: String,
+  enum: ["Unfurnished", "Semi-Furnished", "Fully-Furnished"],
+  default: "Unfurnished",
+},
+
+water_supply: {
+  type: String,
+  enum: ["Municipal", "Borewell", "Both"],
+  default: "Municipal",
+},
+
+internet: {
+  type: String,
+  enum: ["Fiber", "Broadband", "None"],
+  default: "None",
+},
     BrokerId: {
       type: String,
       required: true
