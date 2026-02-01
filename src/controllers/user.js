@@ -80,8 +80,9 @@ const register = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // true in production
-      sameSite: "lax"
+      secure: true, // true in production
+      sameSite: "none"
+      
     });
 
     res.status(201).json({ message: "User registered successfully" });
@@ -119,8 +120,8 @@ const login = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax"
+      secure: true,
+      sameSite: "none"
     });
 
     res.status(200).json({ message: "Login successful" });
