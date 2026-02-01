@@ -14,7 +14,7 @@ const {
 
 router.post("/", auth, properties);
 
-router.get("/getbyid", auth, getdatabyid);
+router.post("/getbyid", auth, getdatabyid);
 
 router.post("/getbyname", auth, getdatabyname);
 
