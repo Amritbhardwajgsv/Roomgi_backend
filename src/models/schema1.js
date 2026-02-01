@@ -140,6 +140,7 @@ houseSchema.pre("save", function () {
   if (!this.house_id) {
     this.house_id = `H${Date.now()}${Math.floor(Math.random() * 1000)}`;
   }
+  next();
 });
 
 
