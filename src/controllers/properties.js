@@ -1,5 +1,5 @@
 const { User, Property } = require("../models/schema1");
-// const House = Property;
+const House = Property;
 
 const properties = async (req, res) => {
   try {
